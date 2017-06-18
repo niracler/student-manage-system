@@ -12,7 +12,7 @@ class Interface_Student : virtual public Interface_Base<STUDENT>
 protected:
     typename list<STUDENT>::iterator mySearch(long id);     //按学号查找学生的功能
     typename list<STUDENT>::iterator mySearch(string name); //按姓名查找学生的功能
-    list <STUDENT> student_vector;                          //学生容器
+    list<STUDENT> student_vector;                          //学生容器
     bool student_flag;                                      //能用就举手
     void myPutIn(void);                                     //将所有学生推进学生容器
 public:
@@ -30,6 +30,12 @@ public:
     void sort(void);        //排序函数
     void statistics(void);  //统计函数
 };
+
+template<class STUDENT>
+void Interface_Student<STUDENT>::statistics()
+{
+
+}
 
 template<class STUDENT>
 void Interface_Student<STUDENT>::sort(void)
@@ -50,13 +56,32 @@ void Interface_Student<STUDENT>::sort(void)
         {
             if (p2->getTotalscore() > p1->getTotalscore())
             {
-                cout << "en" << endl;
                 STUDENT temp;
                 temp = *p1;
                 *p1 = *p2;
                 *p2 = temp;
             }
         }
+    }
+
+    int  n = 1;
+    p1 = p2= student_vector.begin();
+    p1->setSchoolrank(n);
+    for (int i = 0; i < student_vector.size(); ++i, p2++)
+    {
+
+        n++;
+        if (p2->getTotalscore() == p1->getTotalscore())
+        {
+            p2->setSchoolrank(p1->getSchoolrank());
+        }
+        else
+        {
+
+            p2->setSchoolrank(n);
+        }
+        cout << *p2;
+        p1 = p2;
     }
 }
 
@@ -125,16 +150,11 @@ void Interface_Student<STUDENT>::run(void)
                 break; //调用学生删除函数
             case 4:this->display();
                 break; //学生查询函数
-            case 5:
-            {
-                this->sort();
-                list<STUDENT>::iterator p = student_vector.begin();
-                for (int i = 0; i < student_vector.size(); ++i, p++)
-                {
-                    cout << *p;
-                }
-            }break;
-            case 6:break;
+            case 5:this->sort();
+                break;
+            case 6:
+                this->statistics();
+                break;
         }
     }
 }

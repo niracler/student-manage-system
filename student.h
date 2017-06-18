@@ -53,6 +53,8 @@ public:
     typename list<SPECIALITY >::iterator &getSpeciality(void);//获取班级指针变量
     void setName(void); //改变姓名
     void setSex(void);   //改变性别
+    void setClassrank(int classrank);
+    void setSchoolrank(int schoolrank);
     ifstream &load(ifstream &in);
 
     virtual void setScore(int s1, int s2, int s3 = -1) = 0; //设置成绩的纯虚函数
@@ -60,6 +62,18 @@ public:
     virtual void changeScore(void) = 0;//改变分数
     virtual bool fail(int i) = 0; //检查科目是否及格
 };
+
+template<class STUDENT>
+void Student<STUDENT>::setClassrank(int classrank)
+{
+    this->classrank = classrank;
+}
+
+template<class STUDENT>
+void Student<STUDENT>::setSchoolrank(int schoolrank)
+{
+    this->schoolrank = schoolrank;
+}
 
 template<class STUDENT>
 string Student<STUDENT>::getSex()
@@ -144,12 +158,18 @@ void Student<STUDENT>::elsePut(void)
 
     if (this->classrank != -1)
     {
-        cout << setw(8) << this->classrank;
-        cout << setw(8) << this->schoolrank << endl;
+        cout << setw(16) << this->classrank;
     } else
     {
-        cout << setw(8) << "待统计";
-        cout << setw(8) << "待统计" << endl;
+        cout << setw(16) << "待统计";
+    }
+
+    if(this->schoolrank != -1)
+    {
+        cout << setw(16) << this->schoolrank << endl;
+    } else
+    {
+        cout << setw(16) << "待统计" << endl;
     }
 }
 
