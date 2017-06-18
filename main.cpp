@@ -5,6 +5,7 @@ using namespace std;
 int main(void)
 {
     int choice; //选项
+    cout << "进来了" << endl;
     Interface_set<Undergraduate> inter1("Undergradate.txt");
     Interface_set<Postgradute> inter2("Postgredute.txt");
 

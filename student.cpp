@@ -141,7 +141,7 @@ bool Undergraduate::fail(int i)
     {
         case 1:
         {
-            if (this->math < 60)
+            if (this->math < 60 && this->math > -1)
             {
                 return true;
             }
@@ -150,7 +150,7 @@ bool Undergraduate::fail(int i)
 
         case 2:
         {
-            if (this->english < 60)
+            if (this->english < 60 && this->english > -1)
             {
                 return true;
             }
@@ -159,7 +159,7 @@ bool Undergraduate::fail(int i)
 
         case 3:
         {
-            if (this->clanguage < 60)
+            if (this->clanguage < 60 && this->clanguage > -1)
             {
                 return true;
             }
@@ -318,7 +318,7 @@ bool Postgradute::fail(int i)
     {
         case 1:
         {
-            if (this->comprehensive < 60)
+            if (this->comprehensive < 60 && this->comprehensive > -1)
             {
                 return true;
             }
@@ -327,7 +327,7 @@ bool Postgradute::fail(int i)
 
         case 2:
         {
-            if (this->comprehensive < 60)
+            if (this->thesis < 60 && this->thesis > -1)
             {
                 return true;
             }

@@ -16,7 +16,10 @@ protected:
     bool student_flag;                                      //能用就举手
     void myPutIn(void);                                     //将所有学生推进学生容器
 public:
-    Interface_Student() {}
+    Interface_Student()
+    {
+        student_flag = false;
+    }
 
     int menu(void);         //菜单函数
     void run(void);         //运行函数
@@ -31,6 +34,9 @@ public:
 template<class STUDENT>
 void Interface_Student<STUDENT>::myPutIn(void)
 {
+    //先将学生容器清空
+    this->student_vector.clear();
+
     //遍历学生，找到就返回迭代器
     //弄一个指向专业的迭代器
     typename list<SPECIALITY >::iterator pSpeciality;
@@ -65,6 +71,8 @@ void Interface_Student<STUDENT>::myPutIn(void)
             }
         }
     }
+
+    this->student_flag = true; //表示能用了
 }
 
 /*
@@ -76,7 +84,6 @@ void Interface_Student<STUDENT>::run(void)
     while (1)
     {
         int choice = this->menu();
-
 
         switch (choice)
         {
@@ -153,11 +160,9 @@ void Interface_Student<STUDENT>::add_info(void) //增加函数
         return;
     }
 
-    //将学生的指针放到这里的学生容器中
-    cin >> stu;
-
-    //用班级容器装住该学生以免让他飞走了
-    stu.getClass()->MyVector.push_back(stu);
+    cin >> stu;//输入基本信息
+    stu.getClass()->MyVector.push_back(stu);//用班级容器装住该学生以免让他飞走了
+    this->student_vector.push_back(stu);    //也把他放到学生容器里
 }
 
 //函数功能：删除学生
@@ -171,9 +176,21 @@ void Interface_Student<STUDENT>::del_info(void) //删除函数
         long id;
         cin >> id;
 
+        //在学生容器里把它删了
         typename list<STUDENT>::iterator p;
         p = mySearch(id);
-        p->getClass()->MyVector.erase(p);
+        student_vector.erase(p);
+
+        //也在班级容器里把他删了
+        p = p->getClass()->MyVector.begin();
+        for (int i = 0; i < student_vector.size(); ++i, p++)
+        {
+            if(p->getId() == id)
+            {
+                p->getClass()->MyVector.erase(p);
+                break;
+            }
+        }
     }
     catch (long)
     {
@@ -194,8 +211,17 @@ void Interface_Student<STUDENT>::change_info(void) //改变函数
         cout << "请输入学生学号：";
         long id;
         cin >> id;
-        p = this->mySearch(id);
+        p = this->mySearch(id);//在学生容器中找到他
         cout << *p;
+        //在班级容器中找到他
+        p = p->getClass()->MyVector.begin();
+        for (int i = 0; i < student_vector.size(); ++i, p++)
+        {
+            if(p->getId() == id)
+            {
+                break;
+            }
+        }
     }
     catch (long)
     {
@@ -238,12 +264,6 @@ void Interface_Student<STUDENT>::change_info(void) //改变函数
         {
             try
             {
-                if (p->getGrade()->MyVector.size() == 1)
-                {
-                    cout << "该年级现在只有一个班级！！！" << endl;
-                    return;
-                }
-
                 typename list<CLASS >::iterator classes = p->getClass();
 
                 //从该年级中选择班级，让学生的班级指针指向该班级
@@ -266,12 +286,6 @@ void Interface_Student<STUDENT>::change_info(void) //改变函数
         {
             try
             {
-                if (this->speciality_vector.size() == 1)
-                {
-                    cout << "现在只有一个专业！！！" << endl;
-                    return;
-                }
-
                 typename list<CLASS >::iterator classes = p->getClass();
 
                 //选择相应的年级
@@ -300,12 +314,6 @@ void Interface_Student<STUDENT>::change_info(void) //改变函数
         {
             try
             {
-                if (p->getSpeciality()->MyVector.size() == 1)
-                {
-                    cout << "该专业现在只有一个年级！！！" << endl;
-                    return;
-                }
-
                 typename list<CLASS >::iterator classes = p->getClass();
 
                 //选择相应的年级
@@ -329,6 +337,8 @@ void Interface_Student<STUDENT>::change_info(void) //改变函数
         case 6:p->changeScore();
             break; //修改成绩
     }
+
+    this->student_flag = false;//还是失效了
 }
 
 //函数功能：显示学生
@@ -358,24 +368,19 @@ void Interface_Student<STUDENT>::display(void)
         cerr << "输入数据错误，请重新输入:";
     }
 
-    //遍历学生，找到就返回迭代器
-    //弄一个指向专业的迭代器
-    typename list<SPECIALITY >::iterator pSpeciality;
-
-    //年级迭代器
-    typename list<GRADE>::iterator pGrade;
-
-    //班级迭代器
-    typename list<CLASS >::iterator pClass;
-
     //学生迭代器
     typename list<STUDENT>::iterator pStudent;
 
+    //假如学生容器不能用，就将学生放进学生容器
+    if (!student_flag)
+    {
+        this->myPutIn();
+    }
 
     switch (choice)
     {
         case 0:return;
-        case 1:
+        case 1://按姓名查找
         {
             try
             {
@@ -389,9 +394,9 @@ void Interface_Student<STUDENT>::display(void)
                 cout << "抱歉，找不到该学生\n" << endl;
             }
         }
-            break; //按姓名查找
+            break;
 
-        case 2:
+        case 2://按学号查找
         {
             try
             {
@@ -405,48 +410,34 @@ void Interface_Student<STUDENT>::display(void)
                 cout << "抱歉，找不到该学生\n" << endl;
             }
         }
-            break; //按学号查找
+            break;
 
-        case 3:
+        case 3://显示所有学生
         {
-            this->myPutIn();
+            //遍历学生
             pStudent = student_vector.begin();
             for (int i = 0; i < student_vector.size(); ++i, pStudent++)
             {
-                //遍历学生
                 cout << *pStudent;
             }
         }
-            break; //显示所有学生
+            break;
 
-        case 4:
+        case 4://不及格的学生举手
         {
             STUDENT stu(99);
             choice = stu.getSubject();
 
-            pSpeciality = this->speciality_vector.begin();
-            for (int i = 0; i < this->speciality_vector.size(); ++i, pSpeciality++)
+            pStudent = student_vector.begin();
+            for (int i = 0; i < student_vector.size(); ++i, pStudent++)
             {
-                //遍历专业
-                pGrade = pSpeciality->MyVector.begin();
-                for (int j = 0; j < pSpeciality->MyVector.size(); ++j, pGrade++)
+                if (pStudent->fail(choice))
                 {
-                    //遍历年级
-                    pClass = pGrade->MyVector.begin();
-                    for (int k = 0; k < pGrade->MyVector.size(); ++k, pClass++)
-                    {
-                        //遍历班级
-                        pStudent = pClass->MyVector.begin();
-                        for (int l = 0; l < pClass->MyVector.size(); ++l, pStudent)
-                        {
-                            //遍历学生
-                            cout << *pStudent;
-                        }
-                    }
+                    cout << *pStudent;
                 }
             }
         }
-            break; //不及格的学生举手
+            break;
     }
 
     // system("pause");
@@ -457,40 +448,20 @@ template<class STUDENT>
 typename list<STUDENT>::iterator Interface_Student<STUDENT>::mySearch(long id)
 {
     //遍历学生，找到就返回迭代器
-    //弄一个指向专业的迭代器
-    typename list<SPECIALITY >::iterator pSpeciality;
-
-    //年级迭代器
-    typename list<GRADE>::iterator pGrade;
-
-    //班级迭代器
-    typename list<CLASS >::iterator pClass;
+    //假如学生容器不能用，就将学生放进学生容器
+    if (!student_flag)
+    {
+        this->myPutIn();
+    }
 
     //学生迭代器
-    typename list<STUDENT>::iterator pStudent;
+    typename list<STUDENT>::iterator pStudent = student_vector.begin();
 
-    pSpeciality = this->speciality_vector.begin();
-    for (int i = 0; i < this->speciality_vector.size(); ++i, pSpeciality++)
+    for (int i = 0; i < student_vector.size(); ++i, pStudent++)
     {
-        //遍历专业
-        pGrade = pSpeciality->MyVector.begin();
-        for (int j = 0; j < pSpeciality->MyVector.size(); ++j, pGrade++)
+        if (pStudent->getId() == id)
         {
-            //遍历年级
-            pClass = pGrade->MyVector.begin();
-            for (int k = 0; k < pGrade->MyVector.size(); ++k, pClass++)
-            {
-                //遍历班级
-                pStudent = pClass->MyVector.begin();
-                for (int l = 0; l < pClass->MyVector.size(); ++l, pStudent++)
-                {
-                    //遍历学生
-                    if (pStudent->getId() == id)
-                    {
-                        return pStudent;
-                    }
-                }
-            }
+            return pStudent;
         }
     }
 
@@ -501,42 +472,20 @@ typename list<STUDENT>::iterator Interface_Student<STUDENT>::mySearch(long id)
 template<class STUDENT>
 typename list<STUDENT>::iterator Interface_Student<STUDENT>::mySearch(string name)
 {
-    //遍历学生，找到就返回迭代器
-    //弄一个指向专业的迭代器
-    typename list<SPECIALITY >::iterator pSpeciality;
-
-    //年级迭代器
-    typename list<GRADE>::iterator pGrade;
-
-    //班级迭代器
-    typename list<CLASS >::iterator pClass;
+    //假如学生容器不能用，就将学生放进学生容器
+    if (!student_flag)
+    {
+        this->myPutIn();
+    }
 
     //学生迭代器
-    typename list<STUDENT>::iterator pStudent;
+    typename list<STUDENT>::iterator pStudent = student_vector.begin();
 
-
-    pSpeciality = this->speciality_vector.begin();
-    for (int i = 0; i < this->speciality_vector.size(); ++i, pSpeciality++)
+    for (int i = 0; i < student_vector.size(); ++i, pStudent++)
     {
-        //遍历专业
-        pGrade = pSpeciality->MyVector.begin();
-        for (int j = 0; j < pSpeciality->MyVector.size(); ++j, pGrade++)
+        if (pStudent->getName() == name)
         {
-            //遍历年级
-            pClass = pGrade->MyVector.begin();
-            for (int k = 0; k < pGrade->MyVector.size(); ++k, pClass++)
-            {
-                //遍历班级
-                pStudent = pClass->MyVector.begin();
-                for (int l = 0; l < pClass->MyVector.size(); ++l, pStudent++)
-                {
-                    //遍历学生
-                    if (pStudent->getName() == name)
-                    {
-                        return pStudent;
-                    }
-                }
-            }
+            return pStudent;
         }
     }
 
