@@ -32,6 +32,35 @@ public:
 };
 
 template<class STUDENT>
+void Interface_Student<STUDENT>::sort(void)
+{
+    //假如学生容器不能用，就将学生放进学生容器
+    if (!student_flag)
+    {
+        this->myPutIn();
+    }
+
+    //学生迭代器
+    typename list<STUDENT>::iterator p2, p1 = student_vector.begin();
+
+    for (int i = 0; i < student_vector.size() - 1; ++i, p1++)
+    {
+        p2 = p1;
+        for (int j = i; j < student_vector.size(); ++j, p2++)
+        {
+            if (p2->getTotalscore() > p1->getTotalscore())
+            {
+                cout << "en" << endl;
+                STUDENT temp;
+                temp = *p1;
+                *p1 = *p2;
+                *p2 = temp;
+            }
+        }
+    }
+}
+
+template<class STUDENT>
 void Interface_Student<STUDENT>::myPutIn(void)
 {
     //先将学生容器清空
@@ -96,7 +125,15 @@ void Interface_Student<STUDENT>::run(void)
                 break; //调用学生删除函数
             case 4:this->display();
                 break; //学生查询函数
-            case 5:break;
+            case 5:
+            {
+                this->sort();
+                list<STUDENT>::iterator p = student_vector.begin();
+                for (int i = 0; i < student_vector.size(); ++i, p++)
+                {
+                    cout << *p;
+                }
+            }break;
             case 6:break;
         }
     }
@@ -185,7 +222,7 @@ void Interface_Student<STUDENT>::del_info(void) //删除函数
         p = p->getClass()->MyVector.begin();
         for (int i = 0; i < student_vector.size(); ++i, p++)
         {
-            if(p->getId() == id)
+            if (p->getId() == id)
             {
                 p->getClass()->MyVector.erase(p);
                 break;
@@ -217,7 +254,7 @@ void Interface_Student<STUDENT>::change_info(void) //改变函数
         p = p->getClass()->MyVector.begin();
         for (int i = 0; i < student_vector.size(); ++i, p++)
         {
-            if(p->getId() == id)
+            if (p->getId() == id)
             {
                 break;
             }

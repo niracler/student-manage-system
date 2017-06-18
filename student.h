@@ -208,7 +208,7 @@ void Student<STUDENT>::setSex(void)
 /*******************************学生类********************************************/
 /*********************************************************************************/
 //本科生类
-class Undergraduate : virtual public Student<Undergraduate>
+class Undergraduate : public Student<Undergraduate>
 {
 private:
     int math;      //高数成绩
@@ -238,7 +238,7 @@ public:
 /*********************************************************************************/
 
 //研究生类
-class Postgradute : virtual public Student<Postgradute>
+class Postgradute : public Student<Postgradute>
 {
 private:
     int comprehensive; //课程综合
@@ -251,11 +251,11 @@ public:
     void setScore(int s1, int s2, int s3 = -1); //设置成绩的函数
     void setScore(void);
 
-    void changeScore(void);   //改变分数
-    void setComprehensive(void);   //设置课程综合
-    void setThesis(void);                  //设置毕业论文
-    int getSubject(void);              //选择科目名
-    bool fail(int i); //检查科目是否及格
+    void changeScore(void);                     //改变分数
+    void setComprehensive(void);                //设置课程综合
+    void setThesis(void);                       //设置毕业论文
+    int getSubject(void);                       //选择科目名
+    bool fail(int i);                           //检查科目是否及格
     friend ostream &operator<<(ostream &out, Postgradute &pos); //输出重载
     friend istream &operator>>(istream &in, Postgradute &pos);  //输出重载
     friend ofstream &operator<<(ofstream &out, Postgradute &pos); //输出重载
