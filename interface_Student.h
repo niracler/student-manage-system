@@ -67,17 +67,14 @@ void Interface_Student<STUDENT>::sort(void)
     int  n = 1;
     p1 = p2= student_vector.begin();
     p1->setSchoolrank(n);
-    for (int i = 0; i < student_vector.size(); ++i, p2++)
+    for (int i = 0; i < student_vector.size(); ++i, p2++, n++)
     {
-
-        n++;
         if (p2->getTotalscore() == p1->getTotalscore())
         {
             p2->setSchoolrank(p1->getSchoolrank());
         }
         else
         {
-
             p2->setSchoolrank(n);
         }
         cout << *p2;
@@ -194,7 +191,7 @@ template<class STUDENT>
 void Interface_Student<STUDENT>::add_info(void) //增加函数
 {
     //数数
-    static int count = 0;
+    static long count = Student<STUDENT>::maxId;
     count++;
 
     //定义一个学生对象，并存进容器

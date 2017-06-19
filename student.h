@@ -61,6 +61,8 @@ public:
     virtual int getSubject(void) = 0; //选择科目名
     virtual void changeScore(void) = 0;//改变分数
     virtual bool fail(int i) = 0; //检查科目是否及格
+
+    static long maxId;
 };
 
 template<class STUDENT>
@@ -225,9 +227,9 @@ void Student<STUDENT>::setSex(void)
 
 
 /*********************************************************************************/
-/*******************************学生类********************************************/
+/*******************************本科生类********************************************/
 /*********************************************************************************/
-//本科生类
+
 class Undergraduate : public Student<Undergraduate>
 {
 private:
@@ -253,11 +255,12 @@ public:
     friend ofstream &operator<<(ofstream &out, Undergraduate &und); //输出重载
     friend ifstream &operator>>(ifstream &in, Undergraduate &und);  //输出重载
 };
+
 /*********************************************************************************/
-/*******************************学生类********************************************/
+/*******************************研究生类********************************************/
 /*********************************************************************************/
 
-//研究生类
+//
 class Postgradute : public Student<Postgradute>
 {
 private:
@@ -281,3 +284,6 @@ public:
     friend ofstream &operator<<(ofstream &out, Postgradute &pos); //输出重载
     friend ifstream &operator>>(ifstream &in, Postgradute &pos);  //输出重载
 };
+
+template <class STUDENT>
+long Student<STUDENT>::maxId = 0;

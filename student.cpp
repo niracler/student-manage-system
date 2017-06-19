@@ -208,6 +208,11 @@ ifstream &operator>>(ifstream &in, Undergraduate &und)
 {
     und.load(in);
     in >> und.clanguage >> und.english >> und.math;
+
+    if (Student<Undergraduate>::maxId < und.getId())
+    {
+        Student<Undergraduate>::maxId = und.getId();
+    }
     return in;
 }//输出重载
 
@@ -372,6 +377,12 @@ ifstream &operator>>(ifstream &in, Postgradute &pos)
 {
     pos.load(in);
     in >> pos.comprehensive >> pos.thesis;
+
+    if (Student<Postgradute>::maxId < pos.getId())
+    {
+        Student<Postgradute>::maxId = pos.getId();
+    }
+
     return in;
 }//输出重载
 
