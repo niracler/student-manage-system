@@ -1,23 +1,23 @@
 #include "interface_set.h"
+#include <iostream>
 
 using namespace std;
 
 int main(void)
 {
     int choice; //选项
-    cout << "进来了" << endl;
-    Interface_set<Undergraduate> inter1("Undergradate.txt");
-    Interface_set<Postgradute> inter2("Postgredute.txt");
+    Interface_set <Undergraduate> inter1("Undergradate.txt");
+    Interface_set <Postgradute> inter2("Postgredute.txt");
 
     while (1)
     {
-        //system("cls"); // 清屏
+        // system("cls"); // 清屏
         cout << "\n\n 	            学生管理";
         cout << "\n*************************************************";
         cout << "\n*****                                       *****";
-        cout << "\n*****    1.本科生管理         2.研究生管理     *****";
+        cout << "\n*****    1.本科生管理         2.研究生管理  *****";
         cout << "\n*****                                       *****";
-        cout << "\n*****              0.退出系统                *****";
+        cout << "\n*****              0.退出系统               *****";
         cout << "\n*************************************************";
         cout << "\n               请选择(0-2): ";
 

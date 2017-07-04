@@ -1,7 +1,3 @@
-//
-// Created by niracler on 6/1/17.
-//
-
 #pragma once
 
 #include "student.h"
@@ -13,7 +9,6 @@
 
 using namespace std;
 
-
 /*********************************************************************************/
 /*******************************学生操作基类****************************************/
 /*********************************************************************************/
@@ -22,7 +17,10 @@ template<class STUDENT>
 class Interface_Base
 {
 protected:
-    list <SPECIALITY> speciality_vector;                   //专业容器
+    typename list<SPECIALITY >::iterator pSpeciality;  //指向该该专业
+    typename list<GRADE>::iterator pGrade;             //指向该年级
+    typename list<CLASS >::iterator pClass;            //指向该班级
+    list <SPECIALITY> speciality_vector;               //专业容器
 public:
     template<class VECTOR>
     friend typename VECTOR::iterator show(VECTOR &myVector);
@@ -94,7 +92,3 @@ typename VECTOR::iterator search(string name, VECTOR &myVector)
 
     throw name; //要是找不到，则抛出
 }
-
-
-
-

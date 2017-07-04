@@ -1,6 +1,7 @@
 #pragma once
 
-#include "interface_Base.h"
+#include "interface_Student.h"
+
 #define CLASS Management<STUDENT>
 #define GRADE Management<Management<STUDENT>>
 #define SPECIALITY Management<Management<Management<STUDENT>>>
@@ -10,26 +11,33 @@
 /*********************************************************************************/
 
 template<class STUDENT>
-class Interface_Class : virtual public Interface_Base<STUDENT>
+class Interface_Class : virtual public Interface_Student<STUDENT>
 {
-private:
-    typename list<SPECIALITY >::iterator pSpeciality;      //指向该专业
-    typename list<GRADE>::iterator pGrade;                 //指向该年级
-    list <STUDENT> student_vector;                         //学生容器
-    bool student_flag;                                     //能用就举手
 public:
     int menu(void);         //菜单函数
     void run(void);         //运行函数
     void add_info(void);    //增加函数
     void del_info(void);    //删除函数
     void change_info(void); //改变函数
+    void myPutIn(void);     //放入函数
 };
 
 template<class STUDENT>
 void Interface_Class<STUDENT>::run()
 {
-    pSpeciality = show(this->speciality_vector); //选择相应的专业
-    pGrade = show(pSpeciality->MyVector);        //选择相应的年级
+
+    try
+    {
+        cout << "\t   请选择专业：";
+        this->pSpeciality = show(this->speciality_vector); //选择相应的专业
+
+        cout << "\t   请选择年级：";
+        this->pGrade = show(this->pSpeciality->MyVector); //选择相应的年级
+    }
+    catch (int)
+    {
+        return;
+    }
 
     while (1)
     {
@@ -44,7 +52,17 @@ void Interface_Class<STUDENT>::run()
                 break; //调用修改函数
             case 3:this->del_info();
                 break; //调用删除函数
-            case 4:break; //查询函数
+            case 4:
+                try
+                {
+                    this->pClass = show(this->pGrade->MyVector);
+                    this->myPutIn();
+                    Interface_Student<STUDENT>::run(false);
+                }
+                catch (int)
+                {
+                }
+                break; //查询函数
         }
     }
 }
@@ -54,13 +72,13 @@ int Interface_Class<STUDENT>::menu()
 {
     int choice; //选项
 
-    //system("cls"); // 清屏
+    // system("cls"); // 清屏
     cout << "\n 	            班级管理" << endl;
     cout << "\n============================================";
     cout << "\n||                                        ||";
-    cout << "\n||    1.添加数据          2.修改数据        ||";
+    cout << "\n||    1.添加班级          2.修改班级      ||";
     cout << "\n||                                        ||";
-    cout << "\n||    3.删除数据          4.查询数据        ||";
+    cout << "\n||    3.删除班级          4.进入班级      ||";
     cout << "\n||                                        ||";
     cout << "\n||              0.返回                    ||";
     cout << "\n============================================";
@@ -85,7 +103,7 @@ void Interface_Class<STUDENT>::add_info()
 
     //定义一个管理对象，并存进容器
     CLASS classes(name);
-    pGrade->MyVector.push_back(classes);
+    this->pGrade->MyVector.push_back(classes);
 }
 
 template<class STUDENT>
@@ -94,12 +112,12 @@ void Interface_Class<STUDENT>::del_info()
     try
     {
         //假如该年级只有一个班，那就不能删了
-        if (pGrade->MyVector.size() > 1)
+        if (this->pGrade->MyVector.size() > 1)
         {
             cout << "您要删除的班级名:";
             string name;
             cin >> name;
-            pGrade->MyVector.erase(search(name, pGrade->MyVector));
+            this->pGrade->MyVector.erase(search(name, this->pGrade->MyVector));
             cout << "删除成功！！！" << endl;
         } else
         {
@@ -116,17 +134,15 @@ void Interface_Class<STUDENT>::del_info()
 template<class STUDENT>
 void Interface_Class<STUDENT>::change_info()
 {
-    //定义一个要管理的东西的迭代器
-    typename list<CLASS >::iterator p;
+    typename list<CLASS >::iterator p; //定义一个要管理的东西的迭代器
 
     try
     {
         cout << "您要修改的班级名:";
-        string name;
-        cin >> name;
-        p = search(name, pGrade->MyVector);
+        p = show(this->pGrade->MyVector);
 
         cout << "要修改成:";
+        string name;
         cin >> name;
         p->setName(name);
     }
@@ -135,6 +151,23 @@ void Interface_Class<STUDENT>::change_info()
         cout << "抱歉，找不到\n" << endl;
         return;
     }
+    catch (int)
+    {
+        return;
+    }
 }
 
+template<class STUDENT>
+inline void Interface_Class<STUDENT>::myPutIn(void)
+{
+    this->pStudent_vector.clear(); //先将学生指针容器清空
 
+    typename list<STUDENT>::iterator pStudent; //学生迭代器
+
+    pStudent = this->pClass->MyVector.begin();
+    for (int l = 0; l < this->pClass->MyVector.size(); ++l, pStudent++)
+    {
+        //遍历学生
+        this->pStudent_vector.push_back(&(*pStudent));
+    }
+}

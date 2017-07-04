@@ -1,25 +1,27 @@
 #pragma once
 
-#include "interface_Speciality.h"
-#include "interface_Grade.h"
 #include "interface_Class.h"
+#include "interface_Grade.h"
+#include "interface_Speciality.h"
 #include "interface_Student.h"
+
+#define CLASS Management<STUDENT>
+#define GRADE Management<Management<STUDENT>>
+#define SPECIALITY Management<Management<Management<STUDENT>>>
 
 /*********************************************************************************/
 /*******************************集合操作类****************************************/
 /*********************************************************************************/
 
 //把学生管理，班级管理，年级管理，专业管理杂揉在一起的类
-
 template<class STUDENT>
-class Interface_set :
-        public Interface_Student<STUDENT>,
-        public Interface_Class<STUDENT>,
-        public Interface_Grade<STUDENT>,
-        public Interface_Speciality<STUDENT>
+class Interface_set : public Interface_Class<STUDENT>,
+                      public Interface_Grade<STUDENT>,
+                      public Interface_Speciality<STUDENT>
 {
 protected:
     string fileName;
+
 public:
     Interface_set(string fileName);
 
@@ -29,8 +31,8 @@ public:
 
     int myMenu(void);
 
-    bool load();//读档函数
-    bool save();//存档函数
+    bool load(); //读档函数
+    bool save(); //存档函数
 };
 
 template<class STUDENT>
@@ -40,10 +42,19 @@ Interface_set<STUDENT>::Interface_set(string fileName)
 
     if (!this->load())
     {
-        cout << "   您是第一次使用，请初始化第一个专业！！！\n" << endl;
+        cout << "\n   您是第一次使用，请初始化第一个";
 
-        //定义一个专业对象，并存进容器
-        Interface_Speciality<STUDENT>::add_info();
+        if (fileName == "Undergradate.txt")
+        {
+            cout << "本科生";
+        } else
+        {
+            cout << "研究生";
+        }
+
+        cout << "专业！！！\n" << endl;
+
+        Interface_Speciality<STUDENT>::add_info(); //调用专业添加函数
     }
 }
 
@@ -72,7 +83,8 @@ void Interface_set<STUDENT>::myRun(void)
                 break;
             case 3:Interface_Class<STUDENT>::run();
                 break;
-            case 4:Interface_Student<STUDENT>::run();
+            case 4:Interface_Student<STUDENT>::myPutIn();
+                Interface_Student<STUDENT>::run();
                 break;
         }
     }
@@ -83,15 +95,15 @@ int Interface_set<STUDENT>::myMenu(void)
 {
     int choice; //选项
 
-    //system("cls"); // 清屏
+    // system("cls"); // 清屏
     cout << "\n\n 	            学生管理系统";
     cout << "\n*************************************************";
-    cout << "\n*****                                        *****";
-    cout << "\n*****    1.专业管理          2.年级管理        *****";
-    cout << "\n*****                                        *****";
-    cout << "\n*****    3.班级管理          4.学生管理        *****";
-    cout << "\n*****                                        *****";
-    cout << "\n*****              0.返回                     *****";
+    cout << "\n*****                                       *****";
+    cout << "\n*****    1.专业管理          2.年级管理     *****";
+    cout << "\n*****                                       *****";
+    cout << "\n*****    3.班级管理          4.学生管理     *****";
+    cout << "\n*****                                       *****";
+    cout << "\n*****              0.返回                   *****";
     cout << "\n*************************************************";
     cout << "\n               请选择(0-4): ";
 
@@ -115,52 +127,42 @@ bool Interface_set<STUDENT>::save(void)
         return false;
     }
 
-    //遍历学生，找到就返回迭代器
-    //弄一个指向专业的迭代器
-    typename list<SPECIALITY >::iterator pSpeciality;
+    typename list<SPECIALITY >::iterator pSpeciality; //弄一个指向专业的迭代器
+    typename list<GRADE>::iterator pGrade;           //年级迭代器
+    typename list<CLASS >::iterator pClass;           //班级迭代器
+    typename list<STUDENT>::iterator pStudent;       //学生迭代器
 
-    //年级迭代器
-    typename list<GRADE>::iterator pGrade;
-
-    //班级迭代器
-    typename list<CLASS >::iterator pClass;
-
-    //学生迭代器
-    typename list<STUDENT>::iterator pStudent;
-
-    out << this->speciality_vector.size() << ' ';//存取专业数
+    out << this->speciality_vector.size() << ' '; //存取专业数
     pSpeciality = this->speciality_vector.begin();
     for (int i = 0; i < this->speciality_vector.size(); ++i, pSpeciality++)
     {
         //遍历专业, 把专业读进文件
-        out << pSpeciality->getName() << ' ';//存专业名
-        out << pSpeciality->MyVector.size() << ' ';//存取年级数
+        out << pSpeciality->getName() << ' ';       //存专业名
+        out << pSpeciality->MyVector.size() << ' '; //存取年级数
 
         pGrade = pSpeciality->MyVector.begin();
         for (int j = 0; j < pSpeciality->MyVector.size(); ++j, pGrade++)
         {
             //遍历年级, 把年级读进文件
-            out << pGrade->getName() << ' '; //存取年级名
+            out << pGrade->getName() << ' ';       //存取年级名
             out << pGrade->MyVector.size() << ' '; //存取班级数
 
             pClass = pGrade->MyVector.begin();
             for (int k = 0; k < pGrade->MyVector.size(); ++k, pClass++)
             {
                 //遍历班级
-                out << pClass->getName() << ' ';//存取班级名
+                out << pClass->getName() << ' ';       //存取班级名
                 out << pClass->MyVector.size() << ' '; //存取学生数
 
                 pStudent = pClass->MyVector.begin();
                 for (int l = 0; l < pClass->MyVector.size(); ++l, pStudent++)
                 {
                     //遍历学生
-                    out << pStudent->getId() << ' '; //存取学号
-                    out << pStudent->getName() << ' ';//存取姓名
-                    out << pStudent->getSex() << ' '; //存取性别
-                    out << pStudent->getTotalscore() << ' ';//存取总成绩
-                    out << pStudent->getClassrank() << ' ';//存取班级排名
-                    out << pStudent->getSchoolrank() << ' ';//存取校级排名
-                    out << *pStudent;//存取成绩
+                    out << pStudent->getId() << ' ';         //存取学号
+                    out << pStudent->getName() << ' ';       //存取姓名
+                    out << pStudent->getSex() << ' ';        //存取性别
+                    out << pStudent->getTotalscore() << ' '; //存取总成绩
+                    out << *pStudent;                        //存取成绩
                 }
             }
         }
@@ -178,71 +180,54 @@ bool Interface_set<STUDENT>::load(void)
         return false;
     }
 
-    int studentCount;      //学生数
-    int id;
-    int classCount;        //班级数
-    int gradeCount;        //年级数
-    int specialityCount;   //专业数
+    int studentCount;    //学生数
+    int id;              //学号
+    int classCount;      //班级数
+    int gradeCount;      //年级数
+    int specialityCount; //专业数
     STUDENT studentNew;
     CLASS classNew;
     GRADE gradeNew;
     SPECIALITY specialityNew;
 
-    in >> specialityCount;//读取专业数
-    if (specialityCount == 0) return false;
+    in >> specialityCount; //读取专业数
+    if (specialityCount == 0)
+        return false;
 
     for (int i = 0; i < specialityCount; ++i)
     {
-        in >> specialityNew;//读专业名
+        in >> specialityNew; //读专业名
+        in >> gradeCount;    //读年级数
 
-        //读年级数
-        in >> gradeCount;
         for (int j = 0; j < gradeCount; ++j)
         {
-            in >> gradeNew;//读年级名
+            in >> gradeNew;   //读年级名
+            in >> classCount; //读班级数
 
-            //读班级数
-            in >> classCount;
             for (int k = 0; k < classCount; ++k)
             {
-                in >> classNew;//读班级名
+                in >> classNew;     //读班级名
+                in >> studentCount; //读学生数
 
-                //读学生数
-                in >> studentCount;
                 for (int l = 0; l < studentCount; ++l)
                 {
-                    in >> studentNew;//读取学生数据
+                    in >> studentNew; //读取学生数据
                     classNew.MyVector.push_back(studentNew);
                 }
-
-                //将班级放入年级
-                gradeNew.MyVector.push_back(classNew);
+                gradeNew.MyVector.push_back(classNew); //将班级放入年级
                 classNew.MyVector.clear();
             }
-
-            //将年级放入
-            specialityNew.MyVector.push_back(gradeNew);
+            specialityNew.MyVector.push_back(gradeNew); //将年级放入
             gradeNew.MyVector.clear();
         }
-
-        //将专业放入
-        this->speciality_vector.push_back(specialityNew);
+        this->speciality_vector.push_back(specialityNew); //将专业放入
         specialityNew.MyVector.clear();
     }
 
-    //遍历学生，找到就返回迭代器
-    //弄一个指向专业的迭代器
-    typename list<SPECIALITY >::iterator pSpeciality;
-
-    //年级迭代器
-    typename list<GRADE>::iterator pGrade;
-
-    //班级迭代器
-    typename list<CLASS >::iterator pClass;
-
-    //学生迭代器
-    typename list<STUDENT>::iterator pStudent;
-
+    typename list<SPECIALITY >::iterator pSpeciality; //弄一个指向专业的迭代器
+    typename list<GRADE>::iterator pGrade;           //年级迭代器
+    typename list<CLASS >::iterator pClass;           //班级迭代器
+    typename list<STUDENT>::iterator pStudent;       //学生迭代器
 
     pSpeciality = this->speciality_vector.begin();
     for (int i = 0; i < this->speciality_vector.size(); ++i, pSpeciality++)
@@ -270,5 +255,3 @@ bool Interface_set<STUDENT>::load(void)
 
     return true;
 }
-
-

@@ -1,13 +1,9 @@
-//
-// Created by manjaro on 5/30/17.
-//
-# include <iostream>
-# include "student.h"
+#include "student.h"
 #include <fstream>
-# include <iomanip> //对齐要用到
+#include <iomanip> //对齐要用到
+#include <iostream>
 
 using namespace std;
-
 
 /*********************************************************************************/
 /*******************************本科生类******************************************/
@@ -33,18 +29,17 @@ void Undergraduate::setScore(int s1, int s2, int s3)
 
 void Undergraduate::setScore()
 {
+    //设置成绩,计算总分
     this->setClanguage();
     this->setMath();
     this->setEnglish();
-
-    //设置成绩,计算总分
     this->setScore(this->clanguage, this->math, this->english);
 }
 
 void Undergraduate::changeScore()
 {
-    //选择专业
-    int choice = this->getSubject();
+
+    int choice = this->getSubject(); //选择专业
 
     switch (choice)
     {
@@ -57,7 +52,7 @@ void Undergraduate::changeScore()
     }
 
     //设置成绩,计算总分
-    this->setScore(this->clanguage, this->math, this->english);
+    this->setScore(this->english, this->math, this->clanguage);
 }
 
 //设置数学
@@ -113,13 +108,13 @@ int Undergraduate::getSubject(void)
 {
     int choice; //选项
 
-    //system("cls"); /* 清屏 */
+    // system("cls"); /* 清屏 */
     cout << "\n 	            本科生科目" << endl;
     cout << "\n============================================";
     cout << "\n||                                        ||";
-    cout << "\n||    1.高数     　　　   2.英语 　　　      ||";
+    cout << "\n||    1.高数     　　　   2.英语 　　　   ||";
     cout << "\n||                                        ||";
-    cout << "\n||    3.Ｃ语言           0.退出系统　　　　  ||";
+    cout << "\n||    3.C语言             0.退出系统　　  ||";
     cout << "\n||                                        ||";
     cout << "\n============================================";
     cout << "\n               请选择(0-3): " << endl;
@@ -132,6 +127,16 @@ int Undergraduate::getSubject(void)
     }
 
     return choice;
+}
+
+int Undergraduate::getSubject(int subject)
+{
+    switch (subject)
+    {
+        case 1:return this->math;
+        case 2:return this->english;
+        case 3:return this->clanguage;
+    }
 }
 
 //检查科目是否及格
@@ -174,9 +179,9 @@ bool Undergraduate::fail(int i)
 ostream &operator<<(ostream &out, Undergraduate &und)
 {
     und.basePut();                   //基本信息输出
-    out << setw(4) << und.clanguage; // C语言成绩输出
     out << setw(10) << und.math;     //高数成绩输出
     out << setw(10) << und.english;  //英语成绩输出
+    out << setw(4) << und.clanguage; // C语言成绩输出
     und.elsePut();                   //排名输出
 
     return out;
@@ -185,24 +190,22 @@ ostream &operator<<(ostream &out, Undergraduate &und)
 //本科生输入运算符重载函数
 istream &operator>>(istream &in, Undergraduate &und)
 {
-    //基本信息输入
-    und.input();
 
-    //成绩输入
+    und.input(); //基本信息输入
     cout << "\n以下是成绩" << endl;
-    und.setScore();
+    und.setScore(); //成绩输入
 
     return in;
 }
 
 ofstream &operator<<(ofstream &out, Undergraduate &und)
 {
-    out << und.clanguage << ' ';
-    out << und.english << ' ';
     out << und.math << ' ';
+    out << und.english << ' ';
+    out << und.clanguage << ' ';
 
     return out;
-}//输出重载
+} //输出重载
 
 ifstream &operator>>(ifstream &in, Undergraduate &und)
 {
@@ -214,8 +217,7 @@ ifstream &operator>>(ifstream &in, Undergraduate &und)
         Student<Undergraduate>::maxId = und.getId();
     }
     return in;
-}//输出重载
-
+} //输出重载
 
 /*********************************************************************************/
 /*******************************研究生类******************************************/
@@ -263,7 +265,7 @@ void Postgradute::changeScore(void)
 //设置课程终合
 void Postgradute::setComprehensive(void)
 {
-    cout << "课程终合成绩：";
+    cout << "课程综合成绩：";
     cin >> this->comprehensive;
 
     while (this->comprehensive < -1 || this->comprehensive > 100)
@@ -295,13 +297,13 @@ int Postgradute::getSubject(void)
 {
     int choice; //选项
 
-    //system("cls"); /* 清屏 */
+    // system("cls"); /* 清屏 */
     cout << "\n 	            研究生科目" << endl;
     cout << "\n============================================";
     cout << "\n||                                        ||";
-    cout << "\n||    1.课程综合   　　　 2.毕业论文         ||";
+    cout << "\n||    1.课程综合   　　　 2.毕业论文      ||";
     cout << "\n||                                        ||";
-    cout << "\n||               0.退出系统　　       　　  ||";
+    cout << "\n||               0.返回   　　       　　||";
     cout << "\n||                                        ||";
     cout << "\n============================================";
     cout << "\n               请选择(0-3): " << endl;
@@ -314,6 +316,15 @@ int Postgradute::getSubject(void)
     }
 
     return choice;
+}
+
+int Postgradute::getSubject(int subject)
+{
+    switch (subject)
+    {
+        case 1:return this->comprehensive;
+        case 2:return this->thesis;
+    }
 }
 
 //检查科目是否及格
@@ -348,7 +359,7 @@ ostream &operator<<(ostream &out, Postgradute &pos)
 {
     pos.basePut();                       //基本信息输出
     out << setw(8) << pos.comprehensive; //课程综合输出
-    out << setw(8) << pos.thesis;       //毕业论文输出
+    out << setw(8) << pos.thesis;        //毕业论文输出
     pos.elsePut();                       //排名输出
 
     return out;
@@ -357,10 +368,8 @@ ostream &operator<<(ostream &out, Postgradute &pos)
 //研究生输入运算符重载函数
 istream &operator>>(istream &in, Postgradute &pos)
 {
-    //基本信息输入
-    pos.input();
 
-    //成绩输入
+    pos.input(); //基本信息输入
     cout << "\n以下是成绩" << endl;
     pos.setScore();
 
@@ -371,7 +380,7 @@ ofstream &operator<<(ofstream &out, Postgradute &pos)
 {
     out << pos.comprehensive << ' ' << pos.thesis << ' ';
     return out;
-}//输出重载
+} //输出重载
 
 ifstream &operator>>(ifstream &in, Postgradute &pos)
 {
@@ -384,5 +393,4 @@ ifstream &operator>>(ifstream &in, Postgradute &pos)
     }
 
     return in;
-}//输出重载
-
+} //输出重载

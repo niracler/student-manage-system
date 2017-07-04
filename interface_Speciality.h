@@ -1,9 +1,7 @@
-//
-// Created by niracler on 6/15/17.
-//
 #pragma once
 
-#include "interface_Base.h"
+#include "interface_Student.h"
+
 #define CLASS Management<STUDENT>
 #define GRADE Management<Management<STUDENT>>
 #define SPECIALITY Management<Management<Management<STUDENT>>>
@@ -12,17 +10,15 @@
 /*******************************专业操作类****************************************/
 /*********************************************************************************/
 template<class STUDENT>
-class Interface_Speciality : virtual public Interface_Base<STUDENT>
+class Interface_Speciality : virtual public Interface_Student<STUDENT>
 {
-private:
-    list <STUDENT> student_vector;                         //学生容器
-    bool student_flag;                                     //能用就举手
 public:
     int menu(void);         //菜单函数
     void run(void);         //运行函数
     void add_info(void);    //增加函数
     void del_info(void);    //删除函数
     void change_info(void); //改变函数
+    void myPutIn(void);     //放入函数
 };
 
 template<class STUDENT>
@@ -44,9 +40,13 @@ void Interface_Speciality<STUDENT>::run()
             case 4:
                 try
                 {
-                    show(this->speciality_vector);
+                    this->pSpeciality = show(this->speciality_vector);
+                    this->myPutIn();
+                    Interface_Student<STUDENT>::run(false);
                 }
-                catch (int) {}
+                catch (int)
+                {
+                }
                 break; //查询函数
         }
     }
@@ -57,15 +57,15 @@ int Interface_Speciality<STUDENT>::menu()
 {
     int choice; //选项
 
-    //system("cls"); // 清屏
+    // system("cls"); // 清屏
     cout << "\n 	           专业管理" << endl;
     cout << "\n*************************************************";
     cout << "\n*****                                       *****";
-    cout << "\n*****    1.添加专业          2.修改专业       *****";
+    cout << "\n*****    1.添加专业          2.修改专业     *****";
     cout << "\n*****                                       *****";
-    cout << "\n*****    3.删除专业          4.显示所有专业    *****";
+    cout << "\n*****    3.删除专业          4.进入专业     *****";
     cout << "\n*****                                       *****";
-    cout << "\n*****              0.返回                    *****";
+    cout << "\n*****              0.返回                   *****";
     cout << "\n*************************************************";
     cout << "\n               请选择(0-6): ";
 
@@ -123,17 +123,16 @@ void Interface_Speciality<STUDENT>::del_info()
 template<class STUDENT>
 void Interface_Speciality<STUDENT>::change_info()
 {
-    //定义一个要管理的东西的迭代器
-    typename list<SPECIALITY>::iterator p;
+
+    typename list<SPECIALITY >::iterator p; //定义一个要管理的东西的迭代器
 
     try
     {
-        cout << "管理名字:";
-        string name;
-        cin >> name;
-        p = search(name, this->speciality_vector);
+        cout << "请选择您要修改的专业名:";
+        p = show(this->speciality_vector);
 
         cout << "要修改成:";
+        string name;
         cin >> name;
         p->setName(name);
     }
@@ -141,5 +140,33 @@ void Interface_Speciality<STUDENT>::change_info()
     {
         cout << "抱歉，找不到\n" << endl;
         return;
+    }
+}
+
+template<class STUDENT>
+inline void Interface_Speciality<STUDENT>::myPutIn(void)
+{
+    this->pStudent_vector.clear(); //先将学生指针容器清空
+
+    typename list<GRADE>::iterator pGrade;     //年级迭代器
+    typename list<CLASS >::iterator pClass;     //班级迭代器
+    typename list<STUDENT>::iterator pStudent; //学生迭代器
+
+    //遍历专业
+    pGrade = this->pSpeciality->MyVector.begin();
+    for (int j = 0; j < this->pSpeciality->MyVector.size(); ++j, pGrade++)
+    {
+        //遍历年级
+        pClass = pGrade->MyVector.begin();
+        for (int k = 0; k < pGrade->MyVector.size(); ++k, pClass++)
+        {
+            //遍历班级
+            pStudent = pClass->MyVector.begin();
+            for (int l = 0; l < pClass->MyVector.size(); ++l, pStudent++)
+            {
+                //遍历学生
+                this->pStudent_vector.push_back(&(*pStudent));
+            }
+        }
     }
 }

@@ -11,10 +11,10 @@ template<class MEMBER>
 class Management
 {
 private:
-    string name;                      //管理名字
+    string name; //管理名字
 public:
-    list <MEMBER> MyVector;    //成员容器
-    Management(string name = "");     //管理构造函数
+    list <MEMBER> MyVector;        //成员容器
+    Management(string name = ""); //管理构造函数
     string getName(void);
 
     void setName(string name);
